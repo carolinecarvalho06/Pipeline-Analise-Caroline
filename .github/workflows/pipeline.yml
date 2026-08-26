@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+
   pull_request:
     branches:
       - main
@@ -15,19 +16,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Baixar código
         uses: actions/checkout@v4
 
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
 
       - name: Instalar dependências
-        run: pip install -r requirements.txt
+        run: python -m pip install -r requirements.txt
 
       - name: Executar Linter
-        run: flake8 .
+        run: python -m ruff check .
 
 
   testes:
@@ -36,19 +37,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Baixar código
         uses: actions/checkout@v4
 
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
 
       - name: Instalar dependências
-        run: pip install -r requirements.txt
+        run: python -m pip install -r requirements.txt
 
       - name: Executar testes
-        run: pytest
+        run: python -m pytest
 
 
   cobertura:
@@ -57,19 +58,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Baixar código
         uses: actions/checkout@v4
 
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
 
       - name: Instalar dependências
-        run: pip install -r requirements.txt
+        run: python -m pip install -r requirements.txt
 
       - name: Verificar cobertura
-        run: pytest --cov=src --cov-report=term-missing --cov-fail-under=80
+        run: python -m pytest --cov=src --cov-report=term-missing --cov-fail-under=80
 
 
   seguranca:
@@ -78,16 +79,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Baixar código
         uses: actions/checkout@v4
 
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
 
       - name: Instalar dependências
-        run: pip install -r requirements.txt
+        run: python -m pip install -r requirements.txt
 
       - name: Análise de segurança
-        run: bandit -r src
+        run: python -m bandit -r src
