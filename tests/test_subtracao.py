@@ -1,13 +1,13 @@
 from src.calculadora import Calculadora
 
 
-def test_somar():
+def test_subtrair():
     # Arrange
     calculadora = Calculadora()
 
     # Act
-    resultado = calculadora.somar(2, 3)
+    resultado = calculadora.subtrair(5, 2)
 
     # Assert
-    assert resultado == 5
+    assert resultado == 3
     

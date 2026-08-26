@@ -1,13 +1,13 @@
 from src.calculadora import Calculadora
 
 
-def test_somar():
+def test_multiplicar():
     # Arrange
     calculadora = Calculadora()
 
     # Act
-    resultado = calculadora.somar(2, 3)
+    resultado = calculadora.multiplicar(4, 5)
 
     # Assert
-    assert resultado == 5
+    assert resultado == 20
     
