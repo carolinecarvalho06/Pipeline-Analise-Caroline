@@ -13,4 +13,3 @@ class Calculadora:
             raise ValueError("Não é possível dividir por zero")
 
         return a / b
-        
