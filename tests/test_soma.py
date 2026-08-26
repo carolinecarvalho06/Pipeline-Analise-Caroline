@@ -9,4 +9,4 @@ def test_somar():
     resultado = calculadora.somar(2, 3)
 
     # Assert
-    assert resultado == 10
+    assert resultado == 5
