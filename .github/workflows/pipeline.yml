@@ -127,7 +127,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Executar testes com cobertura
-        run: pytest --cov=calculadora --cov-report=term-missing --cov-fail-under=80
+        run: pytest --cov=calculadora --cov-report=term-missing --cov-fail-under=100
 
   seguranca:
     name: Segurança - Chaves Expostas
