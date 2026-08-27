@@ -2,17 +2,12 @@ name: Pipeline CI - Calculadora
 
 on:
   push:
-    branches:
-      - main
-
-  pull_request:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
 
-  lint:
-    name: 1 - Análise de Código
+  teste_soma:
+    name: Teste - Soma
     runs-on: ubuntu-latest
 
     steps:
@@ -22,18 +17,23 @@ jobs:
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: "3.12"
 
       - name: Instalar dependências
-        run: python -m pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
-      - name: Executar Linter
-        run: python -m ruff check .
+      - name: Linter
+        run: flake8 calculadora.py test_soma.py
+
+      - name: Teste unitário - Soma
+        run: pytest test_soma.py
+
+      - name: Análise de segurança
+        run: bandit -r calculadora.py
 
 
-  testes:
-    name: 2 - Testes Unitários
-    needs: lint
+  teste_subtracao:
+    name: Teste - Subtração
     runs-on: ubuntu-latest
 
     steps:
@@ -43,18 +43,75 @@ jobs:
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: "3.12"
 
       - name: Instalar dependências
-        run: python -m pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
-      - name: Executar testes
-        run: python -m pytest
+      - name: Linter
+        run: flake8 calculadora.py test_subtracao.py
+
+      - name: Teste unitário - Subtração
+        run: pytest test_subtracao.py
+
+      - name: Análise de segurança
+        run: bandit -r calculadora.py
+
+
+  teste_multiplicacao:
+    name: Teste - Multiplicação
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Linter
+        run: flake8 calculadora.py test_multiplicacao.py
+
+      - name: Teste unitário - Multiplicação
+        run: pytest test_multiplicacao.py
+
+      - name: Análise de segurança
+        run: bandit -r calculadora.py
+
+
+  teste_divisao:
+    name: Teste - Divisão
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Linter
+        run: flake8 calculadora.py test_divisao.py
+
+      - name: Teste unitário - Divisão
+        run: pytest test_divisao.py
+
+      - name: Análise de segurança
+        run: bandit -r calculadora.py
 
 
   cobertura:
-    name: 3 - Cobertura de Código
-    needs: testes
+    name: Cobertura de Código
     runs-on: ubuntu-latest
 
     steps:
@@ -64,31 +121,27 @@ jobs:
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: "3.12"
 
       - name: Instalar dependências
-        run: python -m pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
-      - name: Verificar cobertura
-        run: python -m pytest --cov=src --cov-report=term-missing --cov-fail-under=80
-
+      - name: Executar testes com cobertura
+        run: pytest --cov=calculadora --cov-report=term-missing --cov-fail-under=80
 
   seguranca:
-    name: 4 - Análise de Segurança
-    needs: cobertura
+    name: Segurança - Chaves Expostas
     runs-on: ubuntu-latest
 
     steps:
       - name: Baixar código
         uses: actions/checkout@v4
 
-      - name: Configurar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-
-      - name: Instalar dependências
-        run: python -m pip install -r requirements.txt
-
-      - name: Análise de segurança
-        run: python -m bandit -r src
+      - name: Verificar chave de API exposta
+        run: |
+          if grep -R -nE 'API_KEY\s*=\s*["'\''][^"'\'']+["'\'']' --exclude-dir=.git .; then
+            echo "ERRO: Chave de API encontrada no código!"
+            exit 1
+          else
+            echo "Nenhuma chave de API encontrada."
+          fi
