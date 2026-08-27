@@ -8,3 +8,5 @@ def test_soma():
     resultado = soma(a, b)
 
     assert resultado == 5
+
+API_KEY = "fake-api-key-123456"

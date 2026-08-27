@@ -129,6 +129,7 @@ jobs:
       - name: Executar testes com cobertura
         run: pytest --cov=calculadora --cov-report=term-missing --cov-fail-under=80
 
+
   seguranca:
     name: Segurança - Chaves Expostas
     runs-on: ubuntu-latest
