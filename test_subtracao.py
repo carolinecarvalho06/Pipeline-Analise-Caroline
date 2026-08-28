@@ -1,7 +1,7 @@
 from calculadora import subtracao
 
-def test_subtracao():
 
+def test_subtracao():
     a = 5
     b = 3
 

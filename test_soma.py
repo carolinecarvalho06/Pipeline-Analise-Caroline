@@ -1,11 +1,10 @@
-from calculadora import soma
+from calculadora import multiplicacao
 
 
-def test_soma():
-    
-    a = 2
+def test_multiplicacao():
+    a = 4
     b = 3
 
-    resultado = soma(a, b)
+    resultado = multiplicacao(a, b)
 
-    assert resultado == 5
+    assert resultado == 12
