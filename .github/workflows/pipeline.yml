@@ -140,7 +140,7 @@ jobs:
 
       - name: Verificar chave de API exposta
         run: |
-          if grep -R -nE 'API_KEY\s*=\s*["'\''][^"'\'']+["'\'']' --exclude-dir=.git .; then
+          if grep -R -n "API_KEY" . --exclude-dir=.git; then
             echo "ERRO: Chave de API encontrada no código!"
             exit 1
           else
