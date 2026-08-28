@@ -140,7 +140,9 @@ jobs:
 
       - name: Verificar chave de API
         run: |
-          if grep -R "API_KEY" . --exclude-dir=.git; then
+          if grep -R -nE 'API_KEY[[:space:]]*=[[:space:]]*["'\''][^"'\'']+["'\'']' . \
+            --exclude-dir=.git \
+            --exclude=pipeline.yml; then
             echo "ERRO: Chave de API encontrada!"
             exit 1
           else
