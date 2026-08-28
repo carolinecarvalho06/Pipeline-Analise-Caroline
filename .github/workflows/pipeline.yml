@@ -138,10 +138,10 @@ jobs:
       - name: Baixar código
         uses: actions/checkout@v4
 
-      - name: Verificar chave de API exposta
+      - name: Verificar chave de API
         run: |
-          if grep -R -n "API_KEY" . --exclude-dir=.git; then
-            echo "ERRO: Chave de API encontrada no código!"
+          if grep -R "API_KEY" . --exclude-dir=.git; then
+            echo "ERRO: Chave de API encontrada!"
             exit 1
           else
             echo "Nenhuma chave de API encontrada."
