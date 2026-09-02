@@ -1,4 +1,4 @@
-name: Pipeline CI - Calculadora
+name: Pipeline CI - Calculadora com Matrix
 
 on:
   push:
@@ -6,145 +6,114 @@ on:
 
 jobs:
 
-  teste_soma:
-    name: Teste - Soma
-    runs-on: ubuntu-latest
+  testes:
+    name: Testes - ${{ matrix.os }} - Python ${{ matrix.python-version }}
+
+    strategy:
+      matrix:
+        os:
+          - ubuntu-22.04
+          - ubuntu-24.04
+          - ubuntu-26.04
+        python-version:
+          - "3.11"
+          - "3.12"
+
+    runs-on: ${{ matrix.os }}
 
     steps:
+
       - name: Baixar código
         uses: actions/checkout@v4
 
-      - name: Configurar Python
+      - name: Configurar Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
+
+      - name: Verificar versões
+        run: |
+          echo "Sistema operacional:"
+          lsb_release -a
+          echo "Versão do Python:"
+          python --version
 
       - name: Instalar dependências
-        run: pip install -r requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Linter
-        run: flake8 calculadora.py test_soma.py
+        run: |
+          flake8 calculadora.py \
+            test_soma.py \
+            test_subtracao.py \
+            test_multiplicacao.py \
+            test_divisao.py
 
       - name: Teste unitário - Soma
         run: pytest test_soma.py
 
-      - name: Análise de segurança
-        run: bandit -r calculadora.py
-
-
-  teste_subtracao:
-    name: Teste - Subtração
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Baixar código
-        uses: actions/checkout@v4
-
-      - name: Configurar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Instalar dependências
-        run: pip install -r requirements.txt
-
-      - name: Linter
-        run: flake8 calculadora.py test_subtracao.py
-
       - name: Teste unitário - Subtração
         run: pytest test_subtracao.py
-
-      - name: Análise de segurança
-        run: bandit -r calculadora.py
-
-
-  teste_multiplicacao:
-    name: Teste - Multiplicação
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Baixar código
-        uses: actions/checkout@v4
-
-      - name: Configurar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Instalar dependências
-        run: pip install -r requirements.txt
-
-      - name: Linter
-        run: flake8 calculadora.py test_multiplicacao.py
 
       - name: Teste unitário - Multiplicação
         run: pytest test_multiplicacao.py
 
-      - name: Análise de segurança
-        run: bandit -r calculadora.py
-
-
-  teste_divisao:
-    name: Teste - Divisão
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Baixar código
-        uses: actions/checkout@v4
-
-      - name: Configurar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Instalar dependências
-        run: pip install -r requirements.txt
-
-      - name: Linter
-        run: flake8 calculadora.py test_divisao.py
-
       - name: Teste unitário - Divisão
         run: pytest test_divisao.py
 
-      - name: Análise de segurança
-        run: bandit -r calculadora.py
+      - name: Testes com cobertura
+        run: |
+          pytest \
+            --cov=calculadora \
+            --cov-report=term-missing \
+            --cov-fail-under=80
 
-
-  cobertura:
-    name: Cobertura de Código
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Baixar código
-        uses: actions/checkout@v4
-
-      - name: Configurar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Instalar dependências
-        run: pip install -r requirements.txt
-
-      - name: Executar testes com cobertura
-        run: pytest --cov=calculadora --cov-report=term-missing --cov-fail-under=80
+      - name: Análise de segurança - Bandit
+        run: |
+          bandit -r calculadora.py
 
 
   seguranca:
     name: Segurança - Chaves Expostas
-    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        os:
+          - ubuntu-22.04
+          - ubuntu-24.04
+          - ubuntu-26.04
+        python-version:
+          - "3.11"
+          - "3.12"
+
+    runs-on: ${{ matrix.os }}
 
     steps:
+
       - name: Baixar código
         uses: actions/checkout@v4
+
+      - name: Configurar Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Verificar versão do Python
+        run: python --version
 
       - name: Verificar chave de API
         run: |
           if grep -R -nE 'API_KEY[[:space:]]*=[[:space:]]*["'\''][^"'\'']+["'\'']' . \
             --exclude-dir=.git \
             --exclude=pipeline.yml; then
+
             echo "ERRO: Chave de API encontrada!"
             exit 1
+
           else
+
             echo "Nenhuma chave de API encontrada."
+
           fi
