@@ -15,7 +15,6 @@ jobs:
         os:
           - ubuntu-22.04
           - ubuntu-24.04
-          - ubuntu-26.04
 
         python-version:
           - "3.11"
@@ -28,6 +27,8 @@ jobs:
       # Baixar o código do repositório
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # Configurar Python utilizando Matrix + Cache
       - name: Configurar Python
@@ -75,6 +76,7 @@ jobs:
 
       # Teste de multiplicação
       - name: Teste unitário - Multiplicação
+      - name: Teste unitário - Multiplicação
         run: |
           pytest test_multiplicacao.py
 
@@ -112,11 +114,10 @@ jobs:
 
           fi
 
-    steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      # Análise com SonarQube
+      # Executar somente uma vez no Matrix
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995 # v8.1.0
+        if: matrix.os == 'ubuntu-24.04' && matrix.python-version == '3.12'
+        uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
