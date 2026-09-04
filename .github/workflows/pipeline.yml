@@ -76,7 +76,6 @@ jobs:
 
       # Teste de multiplicação
       - name: Teste unitário - Multiplicação
-      - name: Teste unitário - Multiplicação
         run: |
           pytest test_multiplicacao.py
 
